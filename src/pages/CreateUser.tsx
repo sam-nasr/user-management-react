@@ -1,64 +1,44 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { usersApi } from '../api/users';
 
-export const EditUser: React.FC = () => {
-  // Extract the user ID from the URL (/users/:id/edit)
-  const { id } = useParams<{ id: string }>();
+export const CreateUser: React.FC = () => {
   const navigate = useNavigate();
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [age, setAge] = useState<number | ''>('');
+  
   const [subPlan, setSubPlan] = useState('Basic');
   const [subExpiresAt, setSubExpiresAt] = useState('');
   const [subActive, setSubActive] = useState(false);
-  const [loading, setLoading] = useState(true);
+  
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
-  // Fetch the user data when the component mounts or ID changes
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!id) return;
-      
-      try {
-        const response = await usersApi.getUserById(id);
-        if (response.error) {
-          setError(response.error);
-        } else {
-          // Pre-fill the form with the fetched user details
-          setName(response.data.name);
-          setEmail(response.data.email);
-          setAge(response.data.age || '');
-          if (response.data.subscription) {
-            setSubPlan(response.data.subscription.plan || 'Basic');
-            const dateStr = response.data.subscription.expiresAt;
-            setSubExpiresAt(dateStr ? new Date(dateStr).toISOString().slice(0, 16) : '');
-            setSubActive(response.data.subscription.active || false);
-          }
-        }
-      } catch (err: any) {
-        setError('Failed to load user data.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, [id]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id) return;
 
     setSaving(true);
     setError('');
 
     try {
-      // Submit the changes using the API
+      // Create user using the API
       const subscription = { plan: subPlan, expiresAt: subExpiresAt ? new Date(subExpiresAt).toISOString() : '', active: subActive };
-      const response = await usersApi.updateUser(id, { name, email, age: Number(age), subscription });
+      
+      // We pass the password here as well because it's a new user creation
+      const response = await usersApi.createUser({ 
+        name, 
+        email, 
+        age: Number(age), 
+        subscription,
+        // using type assertion to ignore that password is not on Partial<User>
+        // alternatively we can update the User type or use any. 
+        // We'll pass it inline as an untyped addition for now or use `any` to avoid TS errors
+        ...( { password } as any )
+      });
+      
       if (response.error) {
         setError(response.error);
       } else {
@@ -66,19 +46,15 @@ export const EditUser: React.FC = () => {
         navigate('/users');
       }
     } catch (err: any) {
-      setError('Failed to update user.');
+      setError('Failed to create user.');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) {
-    return <div className="container">Loading user data...</div>;
-  }
-
   return (
     <div className="glass-panel animate-fade-in">
-      <h2>Edit User</h2>
+      <h2>Create User</h2>
       
       {error && <div className="error-message">{error}</div>}
       
@@ -103,6 +79,18 @@ export const EditUser: React.FC = () => {
             className="input" 
             value={email} 
             onChange={(e) => setEmail(e.target.value)} 
+            required 
+          />
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="password">Password</label>
+          <input 
+            type="password" 
+            id="password" 
+            className="input" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
             required 
           />
         </div>
@@ -164,7 +152,7 @@ export const EditUser: React.FC = () => {
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={saving}>
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? 'Creating...' : 'Create User'}
           </button>
         </div>
       </form>

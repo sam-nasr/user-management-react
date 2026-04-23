@@ -23,6 +23,12 @@ export const usersApi = {
     return data;
   },
 
+  // Create a new user
+  createUser: async (userData: Partial<User>): Promise<ApiResponse<User>> => {
+    const { data } = await apiClient.post<ApiResponse<User>>(`/users`, userData);
+    return data;
+  },
+
   // Delete a user by ID
   deleteUser: async (id: string): Promise<ApiResponse<null>> => {
     const { data } = await apiClient.delete<ApiResponse<null>>(`/users/${id}`);

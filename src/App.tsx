@@ -8,6 +8,7 @@ import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
 import { UsersList } from './pages/UsersList';
 import { EditUser } from './pages/EditUser';
+import { CreateUser } from './pages/CreateUser';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/users" element={<UsersList />} />
+              <Route path="/users/new" element={<CreateUser />} />
               <Route path="/users/:id/edit" element={<EditUser />} />
             </Route>
           </Route>

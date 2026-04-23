@@ -7,8 +7,8 @@ import axios from 'axios';
  * 2. It allows us to set up "interceptors" which run before every request or after every response.
  */
 export const apiClient = axios.create({
-  // Use relative path by default to route through the Vite proxy in development
-  baseURL: import.meta.env.VITE_API_BASE_URL || '',
+  // Use relative path with /api prefix by default to cleanly route through the Vite proxy
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
   headers: {
     'Content-Type': 'application/json',
   },

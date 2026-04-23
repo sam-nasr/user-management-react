@@ -1,7 +1,15 @@
+export interface Subscription {
+  plan: string;
+  expiresAt: string;
+  active: boolean;
+}
+
 export interface User {
   id: string; // Using string as ID is common for UUIDs, but this can hold numbers too if converted
   name: string;
   email: string;
+  age: number;
+  subscription?: Subscription;
 }
 
 // Generic API response matching the backend format: { data: ..., error: null }

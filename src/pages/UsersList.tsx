@@ -51,7 +51,12 @@ export const UsersList: React.FC = () => {
 
   return (
     <div className="animate-fade-in">
-      <h1>Users Management</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h1 style={{ marginBottom: 0 }}>Users Management</h1>
+        <Link to="/users/new" className="btn btn-primary" style={{ width: 'auto' }}>
+          Create User
+        </Link>
+      </div>
       
       {error && <div className="error-message">{error}</div>}
       
@@ -66,13 +71,14 @@ export const UsersList: React.FC = () => {
                   <th>ID</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Age</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ textAlign: 'center' }}>No users found.</td>
+                    <tr>
+                    <td colSpan={5} style={{ textAlign: 'center' }}>No users found.</td>
                   </tr>
                 ) : (
                   users.map((user) => (
@@ -80,6 +86,7 @@ export const UsersList: React.FC = () => {
                       <td>{user.id}</td>
                       <td>{user.name}</td>
                       <td>{user.email}</td>
+                      <td>{user.age}</td>
                       <td className="actions">
                         <Link to={`/users/${user.id}/edit`} className="btn btn-secondary">
                           Edit
